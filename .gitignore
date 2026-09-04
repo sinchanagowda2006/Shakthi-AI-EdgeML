@@ -68,3 +68,8 @@ local.properties
 
 # AGENTS
 .pi/SYSTEM.md
+ai4bharat-env/
+kannada-asr-env/
+*.bin
+*.nemo
+kannada_model/
