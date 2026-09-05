@@ -390,3 +390,57 @@ Whisper.cpp compilation and local inference are working.
 
 AI4Bharat Kannada IndicConformer integration is still being completed.
 
+## Kannada ASR — AI4Bharat IndicConformer
+
+The Kannada ASR module uses the AI4Bharat IndicConformer Hybrid CTC/RNNT model.
+
+### Verified Environment
+
+The following environment has been tested successfully on Windows:
+
+* Python: `3.10.11`
+* PyTorch: `2.14.0`
+* TorchAudio: `2.11.0`
+* NeMo: AI4Bharat NeMo `nemo-v2` branch
+* nemo-toolkit: `1.23.0rc0`
+* NumPy: `1.26.4`
+
+The ASR dependencies should be installed in a separate virtual environment. Do not install them into the main Shakthi AI/RAG environment unless compatibility has been verified.
+
+### Model
+
+Model:
+
+`ai4bharat/indicconformer_stt_kn_hybrid_ctc_rnnt_large`
+
+The `.nemo` model file must be downloaded separately and should not be committed to Git.
+
+Set the model location using the environment variable:
+
+`SHAKTHI_ASR_MODEL_PATH`
+
+Example on Windows:
+
+`set SHAKTHI_ASR_MODEL_PATH=C:\path\to\indicconformer_stt_kn_hybrid_rnnt_large.nemo`
+
+### ASR Interface
+
+The frontend should use:
+
+`transcribe(audio_path) -> str`
+
+The audio file should be a 16 kHz mono WAV file.
+
+Example:
+
+`text = transcribe(audio_path)`
+
+The model is lazy-loaded when `transcribe()` is first called, so importing the module does not immediately load the ASR model.
+
+### Verified Kannada Test
+
+The module has been tested locally with a Kannada 16 kHz WAV recording and successfully produced native Kannada-script transcription.
+
+Example output:
+
+`ನಮಸ್ಕಾರ ನನ್ನ ಹೆಸರು ಶಕ್ತಿಯಾಗಿದೆ ನಾನು ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆಯ ಬಗ್ಗೆ ಕಲಿಯುತ್ತಿದ್ದೇನೆ`
