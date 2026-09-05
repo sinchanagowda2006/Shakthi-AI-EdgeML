@@ -1,27 +1,51 @@
+import os
 from nemo.collections.asr.models import EncDecHybridRNNTCTCBPEModel
 
-MODEL_PATH = (
-    r"C:\Users\spgow\.cache\huggingface\hub"
-    r"\models--ai4bharat--indicconformer_stt_kn_hybrid_ctc_rnnt_large"
-    r"\snapshots\c42a17ebe0c461cb230664c2e46c42f381973a5b"
-    r"\indicconformer_stt_kn_hybrid_rnnt_large.nemo"
-)
+_model = None
 
-model = EncDecHybridRNNTCTCBPEModel.restore_from(
-    MODEL_PATH,
-    map_location="cpu"
-)
+
+def _load_model():
+    global _model
+
+    if _model is None:
+        model_path = os.getenv("SHAKTHI_ASR_MODEL_PATH")
+
+        if not model_path:
+            raise RuntimeError(
+                "SHAKTHI_ASR_MODEL_PATH is not set. "
+                "Set it to the path of the IndicConformer .nemo model."
+            )
+
+        if not os.path.isfile(model_path):
+            raise FileNotFoundError(
+                f"IndicConformer model not found: {model_path}"
+            )
+
+        _model = EncDecHybridRNNTCTCBPEModel.restore_from(
+            model_path,
+            map_location="cpu"
+        )
+
+    return _model
+
 
 def transcribe(audio_path: str) -> str:
+    if not os.path.isfile(audio_path):
+        raise FileNotFoundError(f"Audio file not found: {audio_path}")
+
+    model = _load_model()
+
     results = model.transcribe(
         [audio_path],
         batch_size=1,
         language_id="kn"
     )
+
     return results[0][0].strip()
+
 
 if __name__ == "__main__":
     audio_file = r"C:\Users\spgow\OneDrive\Documents\Sound Recordings\kannada_test.wav"
-    text = transcribe(audio_file)
     print("\nKannada Transcription:")
-    print(text)
+    print(transcribe(audio_file))
+
